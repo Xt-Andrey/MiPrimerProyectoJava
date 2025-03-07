@@ -13,7 +13,7 @@ public class DatosUsuar {
         int num3 = scanner.nextln();
         boolean reultedo = (num1>num2) && (num1<num3);
         System.out.println("cuales numeros son mayores :");
-        
-
-
+        if (i=1;1<10){
+            
+        }
     }
