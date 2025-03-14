@@ -29,8 +29,8 @@ public class Inout {
             } 
             System.out.println();
         }
-        
-}
+    }
+
 
 
 
