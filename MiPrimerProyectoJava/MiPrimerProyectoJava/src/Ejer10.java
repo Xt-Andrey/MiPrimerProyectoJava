@@ -1,6 +1,5 @@
-
 import java.util.Scanner;
-public class ej1 {
+public class Ejer10 {
     public static void main(String[] args) {
         Scanner miobj = new Scanner(System.in);
         System.out.println("ingrese la cantidad de meses");
