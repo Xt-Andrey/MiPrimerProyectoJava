@@ -1,5 +1,5 @@
 import java.util.Scanner;
-public class secuencia {
+public class Ejer3 {
     public static void main(String[] args) {
         Scanner miobj=new Scanner(System.in);
         while (true) {
