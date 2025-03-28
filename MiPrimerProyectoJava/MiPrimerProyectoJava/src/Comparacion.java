@@ -13,4 +13,3 @@ public class Comparacion {
        System.out.println("Â¿numero1 es menor o igual que numero2? " + (var1 <= var2));
     }
  }
- 
