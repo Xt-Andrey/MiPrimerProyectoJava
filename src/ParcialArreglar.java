@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class mejorado {
+public class ParcialArreglar {
     public static void main(String[] args) {
         Scanner miobj = new Scanner(System.in);
 
