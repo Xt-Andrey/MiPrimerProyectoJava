@@ -41,6 +41,6 @@ public class ParcialArreglar {
             System.out.println("usuario " + (i + 1) + " " + nombres[i] + " edad " + edades[i]);
         }
 
-        miobj.close();
+   
     }
 }

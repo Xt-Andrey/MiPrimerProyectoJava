@@ -33,6 +33,6 @@ public class ParcialPractico {
         }
 
         System.out.println("cantidad de estudiantes aprobados " + esApro);
-        miobj.close();
+        
     }
 }

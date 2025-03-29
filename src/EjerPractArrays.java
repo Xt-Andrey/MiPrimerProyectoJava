@@ -9,7 +9,7 @@ public class EjerPractArrays {
         
         System.out.println("ingrese 5 números:");
         for (int i = 0; i < 5; i++) {
-            System.out.print("número " + (i + 1) + ": ");
+            System.out.print("número " + (i + 1));
             numeros[i] = miobj.nextDouble();
             suma += numeros[i];
         }
@@ -17,6 +17,6 @@ public class EjerPractArrays {
         double promedio = suma / 5;
         System.out.println("el promedio es: " + promedio);
         
-        miobj.close();
+    
     }
 }
