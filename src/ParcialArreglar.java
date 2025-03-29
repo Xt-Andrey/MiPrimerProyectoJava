@@ -20,7 +20,7 @@ public class ParcialArreglar {
                 System.out.print("edad del usuario ");
                 if (miobj.hasNextInt()) {
                     edad = miobj.nextInt();
-                    miobj.nextLine(); // limpiar buffer
+                    miobj.nextLine(); 
                     if (edad >= 1 && edad <= 120) {
                         break;
                     } else {
@@ -28,7 +28,7 @@ public class ParcialArreglar {
                     }
                 } else {
                     System.out.println("entrada no valida por favor ingrese un numero entero");
-                    miobj.next(); // limpiar entrada incorrecta
+                    miobj.next(); 
                 }
             }
             edades[i] = edad;
