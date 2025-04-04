@@ -24,6 +24,6 @@ public class Inout {
                 System.out.println();
             }
         }
-        input.close();
+
     }
 }

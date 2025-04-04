@@ -35,6 +35,6 @@ public class Input {
             System.out.println("no se encontraron numeros primos en el rango");
         }
 
-        input.close();
+        
     }
 }

@@ -25,7 +25,6 @@ public class Ejer12 {
         System.out.println("Cantidad de empleados con sueldo entre $100 y $300: " + countLow);
         System.out.println("Cantidad de empleados con sueldo mayor a $300: " + countHigh);
         System.out.println("Gasto total en sueldos: $" + totalSueldo);
-        
-        miobj.close();
+      
     }
 }

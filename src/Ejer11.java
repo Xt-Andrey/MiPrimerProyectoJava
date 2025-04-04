@@ -21,6 +21,6 @@ public class Ejer11 {
         System.out.println("Cantidad de alumnos con nota mayor o igual a 7: " + countHigh);
         System.out.println("Cantidad de alumnos con nota menor a 7: " + countLow);
         
-        miobj.close();
+        
     }
 }

@@ -25,6 +25,6 @@ public class Ejer8 {
             System.out.println("fuera de nivel");
         }
         
-        miobj.close();
+      
     }
 }
