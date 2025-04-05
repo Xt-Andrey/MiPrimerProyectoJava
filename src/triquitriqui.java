@@ -13,19 +13,19 @@ public class triquitriqui {
         char jugadorActual = 'X';
         int turnos = 0;
 
-        System.out.println("¡Bienvenido al juego de triqui!");
-        System.out.println("Jugador 1: X  |  Jugador 2: O");
+        System.out.println("bienvenido al juego de triqui");
+        System.out.println("jugador 1: X  |  Jugador 2: O");
 
         while (true) {
             imprimirTablero(tablero);
-            System.out.println("Turno del jugador " + (jugadorActual == 'X' ? "1 (X)" : "2 (O)"));
-            System.out.print("Ingrese la fila (1-3): ");
+            System.out.println("turno del jugador " + (jugadorActual == 'X' ? "1 (X)" : "2 (O)"));
+            System.out.print("ingrese la fila (1-3): ");
             int fila = miobj.nextInt() - 1;
-            System.out.print("Ingrese la columna (1-3): ");
+            System.out.print("ingrese la columna (1-3): ");
             int columna = miobj.nextInt() - 1;
 
             if (fila < 0 || fila > 2 || columna < 0 || columna > 2 || tablero[fila][columna] != ' ') {
-                System.out.println("Posición inválida o ya ocupada. Intente de nuevo.");
+                System.out.println("posición inválida o ya ocupada. Intente de nuevo.");
                 continue;
             }
 
@@ -34,20 +34,20 @@ public class triquitriqui {
 
             if (verificarGanador(tablero, jugadorActual)) {
                 imprimirTablero(tablero);
-                System.out.println("🎉 ¡El jugador " + (jugadorActual == 'X' ? "1 (X)" : "2 (O)") + " gana!");
+                System.out.println("el jugador " + (jugadorActual == 'X' ? "1 (X)" : "2 (O)") + " gana");
                 break;
             }
 
             if (turnos == 9) {
                 imprimirTablero(tablero);
-                System.out.println(" ¡Empate!");
+                System.out.println("empate");
                 break;
             }
 
             jugadorActual = (jugadorActual == 'X') ? 'O' : 'X';
         }
 
-        miobj.close();
+        
     }
 
     public static void imprimirTablero(char[][] tablero) {
