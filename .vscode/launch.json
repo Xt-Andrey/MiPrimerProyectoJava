@@ -1,0 +1,79 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Ejer13",
+            "request": "launch",
+            "mainClass": "Ejer13",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "MortalKombatSimulacion",
+            "request": "launch",
+            "mainClass": "MortalKombatSimulacion",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "MortalKombatBatalla",
+            "request": "launch",
+            "mainClass": "MortalKombatBatalla",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "SimulacionBatallaMejorada",
+            "request": "launch",
+            "mainClass": "SimulacionBatallaMejorada",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "Mai",
+            "request": "launch",
+            "mainClass": "Mai",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "nombres",
+            "request": "launch",
+            "mainClass": "nombres",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "pasovalor",
+            "request": "launch",
+            "mainClass": "pasovalor",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "SimulacionBatalla",
+            "request": "launch",
+            "mainClass": "SimulacionBatalla",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "java",
+            "name": "I",
+            "request": "launch",
+            "mainClass": "I",
+            "projectName": "MiPrimerProyectoJava_3704c509"
+        },
+        {
+            "type": "gdb",
+            "request": "launch",
+            "name": "GDB",
+            "program": "${workspaceFolder}/${command:AskForProgramName}",
+            "stopOnEntry": true,
+            "arguments": ""
+        }
+    ]
+}
