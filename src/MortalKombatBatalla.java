@@ -1,6 +1,5 @@
 import java.util.Scanner;
 
-// Clase base: Personaje
 class Personaje {
     String nombre;
     int fuerza;
@@ -36,7 +35,7 @@ class Personaje {
     }
 }
 
-// Clase derivada: Heroe (Scorpion)
+//(Scorpion)
 class Heroe extends Personaje {
     public Heroe(String nombre, int fuerza, int velocidad, int resistencia) {
         super(nombre, fuerza, velocidad, resistencia);
@@ -54,7 +53,7 @@ class Heroe extends Personaje {
     }
 }
 
-// Clase derivada: Villano (Sub-Zero)
+// (Sub-Zero)
 class Villano extends Personaje {
     public Villano(String nombre, int fuerza, int velocidad, int resistencia) {
         super(nombre, fuerza, velocidad, resistencia);
