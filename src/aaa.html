@@ -1,240 +1,788 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mortal Kombat</title>
-  <style>
-    body {
-      font-family: 'calibre', sans-serif;
-      background-color: #1c1c1c;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #f30000;
-    }
-    .personajes {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-    }
-    .personaje {
-      background: rgba(255, 0, 0, 0.233);
-      padding: 20px;
-      border-radius: 10px;
-      width: 40%;
-    }
-    select {
-      margin-bottom: 10px;
-      padding: 5px;
-    }
-    .acciones button, #iniciarBtn {
-      margin: 20px;
-      padding: 10px 20px;
-      font-weight: bold;
-      background-color: rgb(248, 66, 10);
-      color: white;
-      border: none;
-      border-radius: 13px;
-      cursor: pointer;
-    }
-    .acciones button:hover, #iniciarBtn:hover {
-      background-color: #666;
-    }
-    .log {
-      background-color: #111;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 20px;
-      height: 200px;
-      overflow-y: auto;
-      font-size: 14px;
-    }
-    .highlight {
-      color: #2600ff;
-    }
-    .fatality {
-      color: rgb(255, 17, 0);
-      font-size: 29px;
-      font-weight: bold;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>STREET THUG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un fondo suave */
+        }
+        /* Estilos para las páginas principales */
+        .page {
+            min-height: 100vh;
+            flex-direction: column; /* Asegura que el contenido se apile verticalmente */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Added for absolute positioning of contact info */
+            display: none; /* Oculta todas las páginas por defecto */
+        }
+        .page:not(.hidden) { /* Muestra la página que NO tiene la clase hidden */
+            display: flex;
+        }
 
-    
-    .oculto {
-      display: none;
-    }
-  </style>
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        /* Estilos para botones primarios */
+        .btn-primary {
+            background-color: #4f46e5; /* Indigo 600 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* Indigo 700 */
+        }
+        .btn-primary:disabled {
+            background-color: #a5b4fc; /* Indigo 300 - softer for disabled */
+            cursor: not-allowed;
+        }
+        /* Estilos para botones secundarios */
+        .btn-secondary {
+            background-color: #e5e7eb; /* Gray 200 */
+            color: #374151; /* Gray 700 */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db; /* Gray 300 */
+        }
+        /* Estilos para el modal de mensaje */
+        .message-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .message-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .message-modal-content button {
+            margin-top: 1rem;
+        }
+        /* Estilos para la información de contacto */
+        .contact-info {
+            position: absolute;
+            top: 1rem; 
+            right: 1rem; 
+            text-align: right;
+            color: #d1d5db; /* Gray 300 for splash page */
+            font-size: 0.75rem; /* text-xs */
+            z-index: 10; /* Ensure it's above other content */
+        }
+        .contact-info p { /* Add some margin between contact items */
+            margin-bottom: 0.25rem; /* Equivalent to mb-1 in Tailwind */
+        }
+        .contact-info p:last-child {
+            margin-bottom: 0;
+        }
+        /* Override for products and product detail page */
+        #productsPage .contact-info,
+        #productDetailPage .contact-info {
+            color: #374151; /* Gray 700 */
+        }
+        /* Estilos para el modal de carrito/pago */
+        .cart-payment-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7); /* Fondo más oscuro para el modal principal */
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto; /* Permite scroll si el contenido es largo */
+        }
+        .cart-payment-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            max-width: 90%;
+            width: 500px; /* Ancho un poco mayor para el carrito */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: relative; /* Para el botón de cerrar */
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280; /* Gray 500 */
+        }
+        .remove-item-btn { /* This style was for the 'x' button, changed to text "Eliminar" */
+            background-color: #fee2e2; /* Red-100 */
+            color: #ef4444; /* Red-500 */
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* medium */
+            transition: background-color 0.2s;
+        }
+        .remove-item-btn:hover {
+            background-color: #fecaca; /* Red-200 */
+            color: #dc2626; /* Red-600 */
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 flex flex-col min-h-screen">
 
-<h1>㊙  Mortal Kombat ㊙ </h1>
-
-<div id="seleccion">
-  <div class="personajes">
-    <div class="personaje">
-      <h2> JUGADOR 1</h2>
-      <select id="select1">
-        <option value="Sub-Zero  ">Sub-Zero</option> 
-        <option value="Kung Lao">Kung Lao</option>
-        <option value="Jax">Jax</option>
-        <option value="Sonya">Sonya</option>
-        <option value="Mileena">Mileena</option>
-        <option value="Scorpion">Scorpion</option>
-        <option value="Liu Kang">Liu Kang</option>
-        <option value="Raiden">Raiden</option>
-        <option value="Johnny Cage">Johnny Cage</option>
-        <option value="Kitana">Kitana</option>
-      </select>
-
+    <div id="messageModal" class="message-modal">
+        <div class="bg-white p-6 rounded-lg text-center w-11/12 max-w-md message-modal-content">
+            <p id="messageText" class="text-lg font-semibold mb-4"></p>
+            <button onclick="hideMessageModal()" class="btn-primary">
+                Aceptar
+            </button>
+        </div>
     </div>
-    <div class="personaje">
-     <h2>JUGADOR 2</h2>
-      <select id="select2">
-        <option value="Sub-Zero">Sub-Zero</option>
-        <option value="Kung Lao">Kung Lao</option>
-        <option value="Jax">Jax</option>
-        <option value="Sonya">Sonya</option>
-        <option value="Mileena">Mileena</option>
-        <option value="Scorpion">Scorpion</option>
-        <option value="Liu Kang">Liu Kang</option>
-        <option value="Raiden">Raiden</option>
-        <option value="Johnny Cage">Johnny Cage</option>
-        <option value="Kitana">Kitana</option>
-      </select>
-     
+
+    <div id="cartPaymentModal" class="cart-payment-modal">
+        <div class="cart-payment-modal-content">
+            <button onclick="hideCartPaymentModal()" class="close-modal-btn">&times;</button>
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">Realizar Pago</h3>
+            <div id="cartSummary" class="mb-6 text-left">
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">Resumen de tu Compra:</h4>
+            </div>
+
+            <p class="text-lg text-gray-700 mb-4">Por favor, realiza tu pago a través de Nequi:</p>
+            <p class="text-4xl font-extrabold text-indigo-600 mb-4">300 123 4567</p>
+            <p class="text-lg text-gray-700 mb-4">O escanea el siguiente código QR:</p>
+            <img src="https://placehold.co/200x200/E8E8E8/B0B0B0?text=QR+Nequi" alt="Código QR de Pago" class="mx-auto mb-8 rounded-lg">
+            <button id="confirmPaymentBtnModal" onclick="confirmPayment()" class="btn-primary w-full">
+                Confirmar Pago
+            </button>
+        </div>
     </div>
-  </div>
-  <button id="iniciarBtn" onclick="iniciarJuego()"> FIGHT ▶
-  </button>
-</div>
 
-
-<div id="combate" style="display: none;">
-  <div class="personajes">
-    <div class="personaje" id="jugador1">
-      <h2 id="nombre1">---</h2>
-      <p class="oculto">Fuerza: <span id="fuerza1">--</span></p>
-      <p class="oculto">Velocidad: <span id="velocidad1">--</span></p>
-      <p class="oculto">Resistencia: <span id="resistencia1">--</span></p>
+    <div id="productsPage" class="page container mx-auto px-4 py-12 bg-yellow-50 rounded-lg shadow-md">
+        <div class="contact-info text-gray-700">
+            <p>Instagram: <a href="https://www.instagram.com/xt_atdery" target="_blank" class="text-indigo-600 hover:underline">@xt_atdery</a></p>
+            <p>TikTok: <a href="https://www.tiktok.com/@k.u.a.n.y?is_from_webapp=1&sender_device=pc" target="_blank" class="text-indigo-600 hover:underline">@KUANY 🌞</a></p>
+        </div>
+        <h2 class="text-5xl font-black text-cyan-400 mb-8 text-center w-full mt-16 md:mt-0">PRODUCTOS</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productsGrid">
+        </div>
     </div>
-    <div class="personaje" id="jugador2">
-      <h2 id="nombre2">---</h2>
-      <p class="oculto">Fuerza: <span id="fuerza2">--</span></p>
-      <p class="oculto">Velocidad: <span id="velocidad2">--</span></p>
-      <p class="oculto">Resistencia: <span id="resistencia2">--</span></p>
+
+    <div id="productDetailPage" class="page hidden p-6 w-full max-w-4xl mx-auto">
+        <div class="contact-info text-gray-700">
+            <p>Instagram: <a href="https://www.instagram.com/xt_atdery" target="_blank" class="text-indigo-600 hover:underline">@xt_atdery</a></p>
+            <p>TikTok: <a href="https://www.tiktok.com/@k.u.a.n.y?is_from_webapp=1&sender_device=pc" target="_blank" class="text-indigo-600 hover:underline">@KUANY 🌞</a></p>
+        </div>
+        <div class="bg-white rounded-xl shadow-xl p-8 flex flex-col md:flex-row gap-8">
+            <img id="detailImage" src="" alt="Producto" class="w-full md:w-1/2 h-96 object-cover rounded-lg">
+            <div class="flex-grow">
+                <h3 id="detailName" class="text-3xl font-bold text-gray-800 mb-4"></h3>
+                <p id="detailPrice" class="text-2xl text-indigo-600 font-semibold mb-4"></p>
+                <p id="detailAvailable" class="text-lg text-gray-600 mb-6"></p>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Talla:</label>
+                    <div id="sizeSelection" class="flex flex-wrap gap-3">
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Género:</label>
+                    <div id="genderSelection" class="flex flex-wrap gap-3">
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <label for="productQuantity" class="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
+                    <input type="number" id="productQuantity" value="1" min="1" class="w-24 p-2 border border-gray-300 rounded-md text-center">
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="addToCartBtn" class="btn-primary flex-grow">
+                        Añadir al Carrito
+                    </button>
+                    <button onclick="showPage('productsPage')" class="btn-secondary flex-grow">
+                        Volver
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="acciones">
-    <button onclick="accion('atacar')">Atacar</button>
-    <button onclick="accion('especial')">Ataque Especial</button>
-    <button onclick="accion('curar')">Recuperarse</button>
-    <button onclick="reiniciar()">Reiniciar</button>
-  </div>
+    <div class="fixed bottom-4 right-4 bg-white p-4 rounded-full shadow-lg cursor-pointer" onclick="showCartPaymentModal()">
+        <span class="text-indigo-600 font-bold text-2xl">🛒</span>
+        <span id="cartCount" class="bg-red-500 text-white rounded-full px-2 py-1 text-xs absolute -top-1 -right-1">0</span>
+    </div>
 
-  <div class="log" id="log">
-    <p><em>El juego ha comenzado...</em></p>
-  </div>
-</div>
+    <script>
+        let products = [
+            {
+                id: 1,
+                name: "Camiseta Oversize Tribal",
+                price: 45.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.02 PM.jpeg",
+                description: "Camiseta negra con diseño tribal en el cuello, estilo callejero auténtico.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 2,
+                name: "Chaqueta Varsity Lifestyle",
+                price: 80.00,
+                available: 8,
+                image: "WhatsApp Image 2025-05-28 at 7.04.04 PM (1).jpeg",
+                description: "Chaqueta varsity beige con capucha blanca y estampados modernos.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 3,
+                name: "Pantaloneta Los Angeles",
+                price: 30.00,
+                available: 12,
+                image: "WhatsApp Image 2025-05-28 at 7.04.04 PM.jpeg",
+                description: "Short azul deportivo con estampado 'Los Angeles'. Perfecto para el verano.",
+                sizes: ["S", "M", "L"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 4,
+                name: "Gorra LA Beige y Rosa",
+                price: 25.00,
+                available: 15,
+                image: "WhatsApp Image 2025-05-28 at 7.04.05 PM.jpeg",
+                description: "Gorra clásica beige con logo LA en rosa. Ajustable y urbana.",
+                sizes: ["Talla Única"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 5,
+                name: "Jeans Rotos Celestes",
+                price: 60.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.05 PM (1).jpeg",
+                description: "Jeans anchos celestes con rotos en las rodillas, ideal para looks callejeros.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["FEMENINO"]
+            },
+            {
+                id: 6,
+                name: "Jeans Anchos Grises",
+                price: 60.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.06 PM.jpeg",
+                description: "Pantalón ancho gris estilo vintage. Comodidad y estilo urbano.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 7,
+                name: "Chaqueta Técnica Bicolor",
+                price: 90.00,
+                available: 6,
+                image: "WhatsApp Image 2025-05-28 at 7.04.07 PM.jpeg",
+                description: "Chaqueta impermeable marrón con diseño técnico en bloques de color.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 8,
+                name: "Blusa Blanca Suelta",
+                price: 40.00,
+                available: 9,
+                image: "WhatsApp Image 2025-05-28 at 7.04.08 PM.jpeg",
+                description: "Blusa blanca de tela ligera con cuello en V y corte holgado.",
+                sizes: ["S", "M", "L"],
+                genders: ["FEMENINO"]
+            },
+             {
+                id: 9,
+                name: "Sudadera Verde",
+                price: 55.00,
+                available: 15,
+                image: "WhatsApp Image 2025-05-28 at 7.04.09 PM.jpeg",
+                description: "Sudadera de algodón en tono verde esmeralda, con ajuste relajado y suave al tacto.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 10,
+                name: "Conjunto Deportivo Gris",
+                price: 110.00,
+                available: 7,
+                image: "WhatsApp Image 2025-05-28 at 7.04.09 PM (1).jpeg",
+                description: "Conjunto de top y pantalón deportivo en gris jaspeado, ideal para actividades urbanas y confort.",
+                sizes: ["S", "M", "L"],
+                genders: ["FEMENINO"]
+            },
+            {
+                id: 11,
+                name: "Camisa Oversize con Estampado",
+                price: 50.00,
+                available: 11,
+                image: "WhatsApp Image 2025-05-28 at 7.04.11 PM.jpeg",
+                description: "Camisa holgada con un estampado gráfico distintivo en tonos pastel, perfecta para un look casual y atrevido.",
+                sizes: ["M", "L", "XL"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 12,
+                name: "Buzo Oversize Negro",
+                price: 65.00,
+                available: 9,
+                image: "WhatsApp Image 2025-05-28 at 7.04.14 PM (1).jpeg",
+                description: "Buzo con capucha oversize en negro, con cordones ajustables y un bolsillo canguro frontal. Máximo confort.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 13,
+                name: "Short Negro Deportivo",
+                price: 28.00,
+                available: 18,
+                image: "WhatsApp Image 2025-05-28 at 7.04.14 PM (2).jpeg",
+                description: "Short negro de tejido ligero y transpirable, con banda elástica en la cintura y corte por encima de la rodilla.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 14,
+                name: "Camiseta con Estampado de Ciudad",
+                price: 42.00,
+                available: 13,
+                image: "WhatsApp Image 2025-05-28 at 7.04.18 PM (1).jpg",
+                description: "Camiseta de algodón con estampado de un paisaje urbano, ideal para el día a día con un toque moderno.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 15,
+                name: "Pantalón Cargo Beige",
+                price: 75.00,
+                available: 8,
+                image: "WhatsApp Image 2025-05-28 at 7.04.18 PM.jpeg",
+                description: "Pantalón cargo en tono beige con múltiples bolsillos, cierre de cremallera y botón, ajuste relajado.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 16,
+                name: "Chaqueta Deportiva Azul",
+                price: 85.00,
+                available: 5,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM.jpeg",
+                description: "Chaqueta deportiva en azul vibrante con detalles reflectantes, cuello alto y cierre de cremallera frontal.",
+                sizes: ["S", "M", "L"],
+                genders: ["MASCULINO", "FEMENINO"]
+            },
+            {
+                id: 17,
+                name: "Vestido Camiseta Negro",
+                price: 48.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM (1).jpeg",
+                description: "Vestido estilo camiseta en negro, con corte recto y cuello redondo. Versátil y cómodo.",
+                sizes: ["XS", "S", "M", "L"],
+                genders: ["FEMENINO"]
+            },
+            {
+                id: 18,
+                name: "Tenis Urbanos Blancos",
+                price: 95.00,
+                available: 14,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM (2).jpeg",
+                description: "Zapatillas urbanas en color blanco con detalles minimalistas, suela gruesa y gran confort para el uso diario.",
+                sizes: ["36", "37", "38", "39", "40", "41", "42", "43", "44"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 19,
+                name: "Sudadera con Capucha Gris",
+                price: 60.00,
+                available: 12,
+                image: "WhatsApp Image 2025-05-28 at 7.04.20 PM.jpeg",
+                description: "Sudadera básica con capucha en gris, ideal para combinar con cualquier look casual.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 20,
+                name: "Top Corto Estampado",
+                price: 35.00,
+                available: 9,
+                image: "WhatsApp Image 2025-05-28 at 7.04.20 PM (1).jpeg",
+                description: "Top corto con un estampado abstracto en tonos tierra, perfecto para el verano.",
+                sizes: ["XS", "S", "M"],
+                genders: ["FEMENINO"]
+            },
+            {
+                id: 21,
+                name: "Chaqueta Bomber Negra",
+                price: 120.00,
+                available: 4,
+                image: "WhatsApp Image 2025-05-28 at 7.04.21 PM.jpeg",
+                description: "Chaqueta bomber clásica en negro, con cierre de cremallera, puños elásticos y forro interior. Un must-have.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO", "FEMENINO"]
+            }
+        ];
 
-<script>
-  const personajes = {
-    "Scorpion":     { nombre: "Scorpion", fuerza: 30, velocidad: 20, resistencia: 100 },
-    "Sub-Zero":     { nombre: "Sub-Zero", fuerza: 28, velocidad: 22, resistencia: 110 },
-    "Liu Kang":     { nombre: "Liu Kang", fuerza: 27, velocidad: 25, resistencia: 95 },
-    "Raiden":       { nombre: "Raiden", fuerza: 35, velocidad: 18, resistencia: 100 },
-    "Johnny Cage":  { nombre: "Johnny Cage", fuerza: 26, velocidad: 24, resistencia: 90 },
-    "Kitana":       { nombre: "Kitana", fuerza: 25, velocidad: 28, resistencia: 85 },
-    "Kung Lao":     { nombre: "Kung Lao", fuerza: 29, velocidad: 23, resistencia: 100 },
-    "Jax":          { nombre: "Jax", fuerza: 32, velocidad: 19, resistencia: 105 },
-    "Sonya":        { nombre: "Sonya", fuerza: 24, velocidad: 26, resistencia: 88 },
-    "Mileena":      { nombre: "Mileena", fuerza: 26, velocidad: 27, resistencia: 92 }
-  };
+        let cartItems = [];
+        let currentViewedProduct = null; 
+        let selectedSize = null;
+        let selectedGender = null;
 
-  let jugador1, jugador2;
-  let turno = 1;
+        function showMessageModal(message) {
+            document.getElementById('messageText').textContent = message;
+            document.getElementById('messageModal').style.display = 'flex';
+        }
 
-  function iniciarJuego() {
-    const seleccion1 = document.getElementById("select1").value;
-    const seleccion2 = document.getElementById("select2").value;
+        function hideMessageModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
 
-    jugador1 = { ...personajes[seleccion1] };
-    jugador2 = { ...personajes[seleccion2] };
-    turno = 1;
+        function showCartPaymentModal() {
+            renderPaymentSummary(); 
+            document.getElementById('cartPaymentModal').style.display = 'flex';
+        }
 
-    document.getElementById("seleccion").style.display = "none";
-    document.getElementById("combate").style.display = "block";
-    document.getElementById("log").innerHTML = "<p><em>El juego ha comenzado...</em></p>";
+        function hideCartPaymentModal() {
+            document.getElementById('cartPaymentModal').style.display = 'none';
+        }
 
-    actualizarVista();
-  }
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            const pageElement = document.getElementById(pageId);
+            if (pageElement) {
+                pageElement.classList.remove('hidden');
+            } else {
+                console.error("Page with ID " + pageId + " not found.");
+                document.getElementById('productsPage').classList.remove('hidden'); // Fallback to products page
+            }
+            window.scrollTo(0, 0); 
 
-  function actualizarVista() {
-    document.getElementById("nombre1").textContent = jugador1.nombre;
-    document.getElementById("fuerza1").textContent = jugador1.fuerza;
-    document.getElementById("velocidad1").textContent = jugador1.velocidad;
-    document.getElementById("resistencia1").textContent = jugador1.resistencia;
+            if (pageId === 'productsPage') {
+                renderProducts();
+            }
+        }
 
-    document.getElementById("nombre2").textContent = jugador2.nombre;
-    document.getElementById("fuerza2").textContent = jugador2.fuerza;
-    document.getElementById("velocidad2").textContent = jugador2.velocidad;
-    document.getElementById("resistencia2").textContent = jugador2.resistencia;
-  }
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            if (!grid) return; // Guard clause
+            grid.innerHTML = products.map(product => `
+                <div class="product-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer" onclick="showProductDetail(${product.id})">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x300/CCCCCC/999999?text=Imagen+no+disponible';">
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold truncate">${product.name}</h3>
+                        <p class="text-gray-600 my-2 text-sm h-10 overflow-hidden">${product.description}</p> 
+                        <div class="flex justify-between items-center mt-2">
+                            <span class="text-2xl font-bold text-indigo-600">$${product.price.toFixed(2)}</span>
+                            <span class="text-sm ${product.available > 0 ? 'text-green-500' : 'text-red-500'}">
+                                ${product.available > 0 ? `${product.available} disponibles` : 'Agotado'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-  function log(msg) {
-    const logDiv = document.getElementById("log");
-    logDiv.innerHTML += "<p>" + msg + "</p>";
-    logDiv.scrollTop = logDiv.scrollHeight;
-  }
+        function showProductDetail(productId) {
+            currentViewedProduct = products.find(p => p.id === productId);
+            if (!currentViewedProduct) {
+                showMessageModal("Producto no encontrado.");
+                showPage('productsPage'); // Go back to products if not found
+                return;
+            }
 
-  function accion(tipo) {
-    if (jugador1.resistencia <= 0 || jugador2.resistencia <= 0) {
-      log("<span class='fatality'>¡La batalla ya terminó!</span>");
-      return;
-    }
+            document.getElementById('detailImage').src = currentViewedProduct.image;
+            document.getElementById('detailImage').onerror = function() {
+                this.onerror=null;
+                this.src='https://placehold.co/600x400/CCCCCC/999999?text=Imagen+no+disponible';
+            };
+            document.getElementById('detailName').textContent = currentViewedProduct.name;
+            document.getElementById('detailPrice').textContent = `$${currentViewedProduct.price.toFixed(2)}`;
+            document.getElementById('detailAvailable').textContent = `Disponibles: ${currentViewedProduct.available}`;
 
-    let atacante = turno === 1 ? jugador1 : jugador2;
-    let defensor = turno === 1 ? jugador2 : jugador1;
-    let daño = 0;
+            const sizeSelection = document.getElementById('sizeSelection');
+            sizeSelection.innerHTML = currentViewedProduct.sizes.map(size => `
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="size" value="${size}" class="form-radio h-5 w-5 text-indigo-600" onchange="selectedSize = this.value">
+                    <span class="ml-2 text-gray-700">${size}</span>
+                </label>
+            `).join('');
 
-    switch (tipo) {
-      case "atacar":
-        daño = atacante.fuerza;
-        defensor.resistencia -= daño;
-        log(`<span class='highlight'>${atacante.nombre}</span> ataca y causa ${daño} de daño.`);
-        break;
-      case "especial":
-        daño = atacante.fuerza + atacante.velocidad;
-        defensor.resistencia -= daño;
-        log(`<span class='highlight'>${atacante.nombre}</span> hace ATAQUE ESPECIAL con ${daño} de daño.`);
-        break;
-      case "curar":
-        atacante.resistencia += 15;
-        log(`${atacante.nombre} se recupera 15 puntos.`);
-        break;
-    }
+            const genderSelection = document.getElementById('genderSelection');
+            genderSelection.innerHTML = currentViewedProduct.genders.map(gender => `
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="gender" value="${gender}" class="form-radio h-5 w-5 text-indigo-600" onchange="selectedGender = this.value">
+                    <span class="ml-2 text-gray-700">${gender}</span>
+                </label>
+            `).join('');
 
-    if (defensor.resistencia < 0) defensor.resistencia = 0;
-    if (atacante.resistencia < 0) atacante.resistencia = 0;
+            selectedSize = null;
+            selectedGender = null;
+            document.querySelectorAll('input[name="size"]').forEach(radio => radio.checked = false);
+            document.querySelectorAll('input[name="gender"]').forEach(radio => radio.checked = false);
 
-    actualizarVista();
+            const quantityInput = document.getElementById('productQuantity');
+            const addToCartBtn = document.getElementById('addToCartBtn');
 
-    if (defensor.resistencia === 0) {
-      log(`<span class='fatality'>${atacante.nombre}: "FINISH HIM!"</span>`);
-      log(`<span class='fatality'>${atacante.nombre} realiza un FATALITY sobre ${defensor.nombre}</span>`);
-      log(`<span class='fatality'>🔥 ¡${atacante.nombre} gana la batalla! 🔥</span>`);
-      return;
-    }
+            if (currentViewedProduct.available <= 0) {
+                quantityInput.value = 0;
+                quantityInput.max = 0;
+                quantityInput.disabled = true;
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'Agotado';
+            } else {
+                quantityInput.value = 1;
+                quantityInput.max = currentViewedProduct.available;
+                quantityInput.disabled = false;
+                addToCartBtn.disabled = false;
+                addToCartBtn.textContent = 'Añadir al Carrito';
+            }
+            
+            quantityInput.onchange = (event) => {
+                let enteredQuantity = parseInt(event.target.value);
+                const productState = products.find(p => p.id === currentViewedProduct.id); 
+                const maxAvailable = productState ? productState.available : 0;
 
-    turno = turno === 1 ? 2 : 1;
-  }
+                if (isNaN(enteredQuantity)) enteredQuantity = 1;
+                
+                if (maxAvailable === 0) {
+                    enteredQuantity = 0;
+                } else {
+                    if (enteredQuantity > maxAvailable) {
+                        enteredQuantity = maxAvailable;
+                        showMessageModal(`Solo hay ${maxAvailable} unidades disponibles.`);
+                    }
+                    if (enteredQuantity < 1) {
+                        enteredQuantity = 1;
+                    }
+                }
+                quantityInput.value = enteredQuantity;
+            };
 
-  function reiniciar() {
-    document.getElementById("combate").style.display = "none";
-    document.getElementById("seleccion").style.display = "block";
-    document.getElementById("log").innerHTML = "";
-  }
-</script>
+            showPage('productDetailPage');
+        }
+        
+        function updateCartCount() {
+            const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCountSpan = document.getElementById('cartCount');
+            if (cartCountSpan) {
+                cartCountSpan.textContent = totalQuantity;
+            }
+        }
+
+        document.getElementById('addToCartBtn').addEventListener('click', () => {
+            if (!currentViewedProduct) {
+                showMessageModal('Error: No hay producto seleccionado.');
+                return;
+            }
+            if (!selectedSize) {
+                showMessageModal('Por favor, selecciona una talla.');
+                return;
+            }
+            if (!selectedGender) {
+                showMessageModal('Por favor, selecciona un género.');
+                return;
+            }
+
+            const quantityInput = document.getElementById('productQuantity');
+            let quantityToAdd = parseInt(quantityInput.value);
+
+            if (isNaN(quantityToAdd) || quantityToAdd < 1) {
+                showMessageModal('Por favor, ingresa una cantidad válida (mínimo 1).');
+                if (currentViewedProduct.available > 0) quantityInput.value = 1;
+                else quantityInput.value = 0;
+                return;
+            }
+
+            const productInCatalog = products.find(p => p.id === currentViewedProduct.id);
+            if (!productInCatalog) { 
+                showMessageModal('Error: Producto no encontrado en el catálogo.');
+                return;
+            }
+
+            if (productInCatalog.available <= 0) {
+                showMessageModal('Este producto está agotado.');
+                return;
+            }
+            if (quantityToAdd > productInCatalog.available) {
+                showMessageModal(`No hay suficiente stock. Solo quedan ${productInCatalog.available} unidades. Por favor, ajusta la cantidad.`);
+                quantityInput.value = productInCatalog.available;
+                return;
+            }
+            
+            // Check if item with same id, size, and gender is already in cart
+            const existingCartItemIndex = cartItems.findIndex(item => 
+                item.id === productInCatalog.id && 
+                item.size === selectedSize && 
+                item.gender === selectedGender
+            );
+
+            if (existingCartItemIndex > -1) {
+                // Item exists, update quantity
+                cartItems[existingCartItemIndex].quantity += quantityToAdd;
+            } else {
+                // Item does not exist, add new item
+                cartItems.push({
+                    id: productInCatalog.id,
+                    name: productInCatalog.name,
+                    price: productInCatalog.price,
+                    image: productInCatalog.image,
+                    cartItemId: Date.now().toString(36) + Math.random().toString(36).substring(2, 9), 
+                    size: selectedSize,
+                    gender: selectedGender,
+                    quantity: quantityToAdd
+                });
+            }
+
+
+            productInCatalog.available -= quantityToAdd;
+            updateCartCount();
+            showMessageModal(`Se añadieron ${quantityToAdd} "${productInCatalog.name}" (Talla: ${selectedSize}, Género: ${selectedGender}) al carrito.`);
+
+            document.getElementById('detailAvailable').textContent = `Disponibles: ${productInCatalog.available}`;
+            quantityInput.max = productInCatalog.available;
+            if (productInCatalog.available === 0) {
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'Agotado';
+                quantityInput.disabled = true;
+                quantityInput.value = 0;
+            } else {
+                quantityInput.value = 1; 
+            }
+            
+            selectedSize = null;
+            selectedGender = null;
+            document.querySelectorAll('input[name="size"]').forEach(radio => radio.checked = false);
+            document.querySelectorAll('input[name="gender"]').forEach(radio => radio.checked = false);
+
+            setTimeout(() => {
+                hideMessageModal();
+            }, 1500);
+        });
+
+        function renderPaymentSummary() {
+            const cartSummaryDiv = document.getElementById('cartSummary');
+            if (!cartSummaryDiv) return;
+            cartSummaryDiv.innerHTML = '<h4 class="text-xl font-semibold text-gray-800 mb-4">Resumen de tu Compra:</h4>';
+            let total = 0;
+
+            const confirmPaymentButton = document.getElementById('confirmPaymentBtnModal');
+
+            if (cartItems.length === 0) {
+                cartSummaryDiv.innerHTML += '<p class="text-gray-600">Tu carrito está vacío.</p>';
+                if (confirmPaymentButton) confirmPaymentButton.disabled = true;
+                return;
+            } else {
+                if (confirmPaymentButton) confirmPaymentButton.disabled = false;
+            }
+
+            cartItems.forEach(item => {
+                total += item.price * item.quantity;
+                cartSummaryDiv.innerHTML += `
+                    <div class="flex items-center justify-between p-3 mb-2 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-3">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded" onerror="this.onerror=null;this.src='https://placehold.co/48x48/CCCCCC/999999?text=Img';">
+                            <div class="flex flex-col items-start">
+                                <span class="font-semibold text-gray-800">${item.name}</span>
+                                <span class="text-sm text-gray-600">${item.size}, ${item.gender} &times; ${item.quantity}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end space-y-1">
+                            <span class="text-lg font-bold text-indigo-600">$${(item.price * item.quantity).toFixed(2)}</span>
+                            <button class="remove-item-btn" onclick="removeItemFromCart('${item.cartItemId}')">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            cartSummaryDiv.innerHTML += `
+                <div class="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-300">
+                    <span class="text-lg font-bold">Total:</span>
+                    <span class="text-2xl font-extrabold text-indigo-600">$${total.toFixed(2)}</span>
+                </div>
+            `;
+        }
+
+        function removeItemFromCart(cartItemIdToRemove) {
+            const itemIndex = cartItems.findIndex(item => item.cartItemId === cartItemIdToRemove);
+            if (itemIndex > -1) {
+                const removedItem = cartItems.splice(itemIndex, 1)[0];
+                const originalProduct = products.find(p => p.id === removedItem.id);
+                if (originalProduct) {
+                    originalProduct.available += removedItem.quantity;
+                }
+
+                updateCartCount();
+                renderPaymentSummary(); 
+                
+                const productsPageElement = document.getElementById('productsPage');
+                if (productsPageElement && !productsPageElement.classList.contains('hidden')) {
+                    renderProducts(); 
+                }
+                
+                const productDetailPageElement = document.getElementById('productDetailPage');
+                if (currentViewedProduct && currentViewedProduct.id === removedItem.id &&
+                    productDetailPageElement && !productDetailPageElement.classList.contains('hidden')) {
+                    showProductDetail(removedItem.id); 
+                }
+                
+                showMessageModal('Producto eliminado del carrito.');
+                setTimeout(hideMessageModal, 1000);
+            }
+        }
+
+        function confirmPayment() {
+            if (cartItems.length === 0) {
+                showMessageModal('Tu carrito está vacío. Añade productos antes de confirmar el pago.');
+                return;
+            }
+            cartItems = []; 
+            updateCartCount();
+            showMessageModal('¡Pago confirmado! Gracias por tu compra.');
+            
+            setTimeout(() => {
+                hideMessageModal();
+                hideCartPaymentModal();
+                renderProducts(); 
+                showPage('productsPage');
+            }, 2000);
+        }
+
+        window.onload = () => {
+            updateCartCount(); 
+            showPage('productsPage'); // Directly show products page on load
+        }
+    </script>
 </body>
 </html>

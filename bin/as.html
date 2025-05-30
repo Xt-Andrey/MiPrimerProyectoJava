@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>STREET THUG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un fondo suave */
+        }
+        /* Estilos para las páginas principales */
+        .page {
+            min-height: 100vh;
+            flex-direction: column; /* Asegura que el contenido se apile verticalmente */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Added for absolute positioning of contact info */
+            display: none; /* Oculta todas las páginas por defecto */
+        }
+        .page:not(.hidden) { /* Muestra la página que NO tiene la clase hidden */
+            display: flex;
+        }
+
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        /* Estilos para botones primarios */
+        .btn-primary {
+            background-color: #4f46e5; /* Indigo 600 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* Indigo 700 */
+        }
+        .btn-primary:disabled {
+            background-color: #a5b4fc; /* Indigo 300 - softer for disabled */
+            cursor: not-allowed;
+        }
+        /* Estilos para botones secundarios */
+        .btn-secondary {
+            background-color: #e5e7eb; /* Gray 200 */
+            color: #374151; /* Gray 700 */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+            font-weight: 500;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db; /* Gray 300 */
+        }
+        /* Estilos para el modal de mensaje */
+        .message-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .message-modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .message-modal-content button {
+            margin-top: 1rem;
+        }
+        /* Estilos para la información de contacto */
+        .contact-info {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            text-align: right;
+            color: #d1d5db; /* Gray 300 for splash page */
+            font-size: 0.75rem; /* text-xs */
+            z-index: 10; /* Ensure it's above other content */
+        }
+        .contact-info p { /* Add some margin between contact items */
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+    <div id="splash-page" class="page flex justify-center items-center bg-gray-900 text-white p-4">
+        <div class="contact-info">
+            <p>Tel: +57 322 4118742</p>
+            <p>Email: streethug@gmail.com</p>
+            <p>Dirección: Ocaña, Norte de Santander</p>
+        </div>
+        <div class="text-center">
+            <h1 class="text-6xl font-extrabold mb-4 animate-pulse">STREET THUG</h1>
+            <p class="text-xl mb-8">Tu estilo, tu actitud, tu calle.</p>
+            <button id="enter-store-btn" class="btn-primary text-lg">Entrar a la Tienda</button>
+        </div>
+    </div>
+
+    <div id="main-store-page" class="page hidden p-4">
+        <header class="w-full bg-white shadow-md py-4 px-6 flex justify-between items-center fixed top-0 left-0 z-50">
+            <h2 class="text-3xl font-bold text-gray-800">STREET THUG</h2>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><button id="home-btn" class="text-gray-600 hover:text-indigo-600 font-medium">Inicio</button></li>
+                    <li><button id="cart-btn" class="text-gray-600 hover:text-indigo-600 font-medium relative">
+                        Carrito (<span id="cart-count">0</span>)
+                    </button></li>
+                    <li><button id="about-us-btn" class="text-gray-600 hover:text-indigo-600 font-medium">Sobre Nosotros</button></li>
+                    <li><button id="contact-btn" class="text-gray-600 hover:text-indigo-600 font-medium">Contacto</button></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section id="product-list-section" class="container mx-auto mt-24 p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            </section>
+
+        <section id="product-detail-section" class="hidden fixed inset-0 bg-white bg-opacity-95 z-50 flex flex-col items-center justify-center p-4 overflow-y-auto">
+            <button id="close-detail-btn" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold">&times;</button>
+            <div class="flex flex-col md:flex-row bg-white rounded-lg shadow-xl overflow-hidden max-w-4xl w-full p-6">
+                <div class="md:w-1/2 flex justify-center items-center p-4">
+                    <img id="detail-product-image" src="" alt="Product Image" class="max-h-96 object-contain rounded-lg shadow-md"/>
+                </div>
+                <div class="md:w-1/2 p-4 flex flex-col justify-between">
+                    <div>
+                        <h3 id="detail-product-name" class="text-4xl font-extrabold text-gray-800 mb-2"></h3>
+                        <p class="text-gray-600 text-lg mb-4" id="detail-product-description"></p>
+                        <p class="text-3xl font-bold text-indigo-700 mb-4">$<span id="detail-product-price"></span></p>
+
+                        <div id="detail-product-colors" class="mb-4">
+                            <span class="font-semibold text-gray-700">Color:</span>
+                            <div id="color-options" class="flex space-x-2 mt-2">
+                                </div>
+                        </div>
+
+                        <div id="detail-product-sizes" class="mb-4">
+                            <span class="font-semibold text-gray-700">Talla:</span>
+                            <div id="size-options" class="flex space-x-2 mt-2">
+                                </div>
+                        </div>
+                        <p id="detail-product-gender" class="text-gray-700 text-sm mb-4"></p>
+                        <p id="detail-product-availability" class="text-sm text-gray-500 mb-4"></p>
+                    </div>
+                    <button id="add-to-cart-detail-btn" class="btn-primary w-full mt-4">Agregar al Carrito</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="cart-section" class="hidden container mx-auto mt-24 p-6 bg-white rounded-lg shadow-lg">
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">Tu Carrito de Compras</h3>
+            <div id="cart-items" class="border-t border-gray-200 pt-4">
+                <p id="empty-cart-message" class="text-gray-500 text-center">Tu carrito está vacío.</p>
+            </div>
+            <div id="cart-summary" class="flex justify-end items-center mt-6 pt-4 border-t border-gray-200">
+                <p class="text-xl font-semibold text-gray-700 mr-4">Total: $<span id="cart-total">0.00</span></p>
+                <button id="checkout-btn" class="btn-primary">Proceder al Pago</button>
+            </div>
+        </section>
+
+        <section id="about-us-section" class="hidden container mx-auto mt-24 p-6 bg-white rounded-lg shadow-lg text-gray-700 leading-relaxed">
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">Sobre Nosotros</h3>
+            <p class="mb-4">
+                En <strong>STREET THUG</strong>, creemos que la moda es una forma de expresión personal y una extensión de tu actitud. Nacimos de la pasión por el estilo urbano y la cultura callejera, ofreciendo prendas que combinan comodidad, diseño innovador y la más alta calidad.
+            </p>
+            <p class="mb-4">
+                Nuestra misión es empoderarte para que vistas con confianza, sabiendo que cada pieza ha sido seleccionada y diseñada pensando en la autenticidad y la durabilidad. Desde camisetas gráficas hasta pantalones cargo y accesorios únicos, cada artículo en nuestra colección está hecho para aquellos que no temen destacar.
+            </p>
+            <p class="mb-4">
+                Somos más que una marca de ropa; somos una comunidad de individuos que viven la vida en sus propios términos, con estilo y determinación. Únete a la familia <strong>STREET THUG</strong> y redefine tu armario con piezas que hablan por sí mismas.
+            </p>
+            <p>
+                Gracias por elegir STREET THUG. ¡Viste tu actitud!
+            </p>
+        </section>
+
+        <section id="contact-section" class="hidden container mx-auto mt-24 p-6 bg-white rounded-lg shadow-lg text-gray-700">
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">Contáctanos</h3>
+            <p class="mb-4">Estamos aquí para ayudarte. Si tienes alguna pregunta, comentario o necesitas asistencia, no dudes en contactarnos a través de los siguientes medios:</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Información de Contacto</h4>
+                    <p class="mb-2"><strong>Teléfono:</strong> +57 322 4118742</p>
+                    <p class="mb-2"><strong>Email:</strong> streethug@gmail.com</p>
+                    <p class="mb-2"><strong>Dirección:</strong> Ocaña, Norte de Santander, Colombia</p>
+                </div>
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Horario de Atención</h4>
+                    <p class="mb-2">Lunes a Viernes: 9:00 AM - 6:00 PM</p>
+                    <p class="mb-2">Sábados: 10:00 AM - 2:00 PM</p>
+                    <p>Domingos: Cerrado</p>
+                </div>
+            </div>
+
+            <h4 class="text-xl font-semibold text-gray-800 mb-2">Envíanos un Mensaje</h4>
+            <form id="contact-form" class="space-y-4">
+                <div>
+                    <label for="contact-name" class="block text-sm font-medium text-gray-700">Nombre:</label>
+                    <input type="text" id="contact-name" name="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label for="contact-email" class="block text-sm font-medium text-gray-700">Email:</label>
+                    <input type="email" id="contact-email" name="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label for="contact-message" class="block text-sm font-medium text-gray-700">Mensaje:</label>
+                    <textarea id="contact-message" name="message" rows="5" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Enviar Mensaje</button>
+            </form>
+        </section>
+
+        <footer class="w-full bg-gray-800 text-white py-6 px-6 mt-12 text-center">
+            <p>&copy; 2025 STREET THUG. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <div id="message-modal" class="message-modal">
+        <div class="message-modal-content">
+            <p id="modal-message" class="text-lg font-semibold text-gray-800"></p>
+            <button id="close-modal-btn" class="btn-primary">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                id: 1,
+                name: "Conjunto Burbuja Powerpuff Girls",
+                price: 55.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.02 PM.jpeg-121a732c-f2e7-435d-83ac-ad55e44eb147",
+                description: "Conjunto de camiseta negra con estampado de Burbuja y shorts azules, incluye calcetines Nike.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["FEMENINO"],
+                colors: ["Negro/Azul", "Blanco/Verde"],
+                colorImages: {
+                    "Negro/Azul": "WhatsApp Image 2025-05-28 at 7.04.02 PM.jpeg-121a732c-f2e7-435d-83ac-ad55e44eb147",
+                    "Blanco/Verde": "WhatsApp Image 2025-05-28 at 7.04.06 PM (2).jpeg-2dfe55c9-d865-47a8-b761-4f95c6b9ad12"
+                }
+            },
+            {
+                id: 2,
+                name: "Camiseta 'Los Angeles' Rosa",
+                price: 40.00,
+                available: 15,
+                image: "WhatsApp Image 2025-05-28 at 7.04.04 PM (1).jpeg-ee1423a5-5928-4f76-83bf-438f486d1c69",
+                description: "Camiseta rosa con el clásico estampado 'Los Angeles' en blanco, ideal para un look casual.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["FEMENINO"],
+                colors: ["Rosa", "Blanco"],
+                colorImages: {
+                    "Rosa": "WhatsApp Image 2025-05-28 at 7.04.04 PM (1).jpeg-ee1423a5-5928-4f76-83bf-438f486d1c69",
+                    "Blanco": "WhatsApp Image 2025-05-28 at 7.04.07 PM (1).jpeg-27373ac2-c5d4-401b-9e7f-e66be4395a0c"
+                }
+            },
+            {
+                id: 3,
+                name: "Short Deportivo 'Los Angeles' Blanco",
+                price: 30.00,
+                available: 12,
+                image: "WhatsApp Image 2025-05-28 at 7.04.04 PM (2).jpeg-ba5ca04e-09f9-4be7-aea4-ba5d46f6f67d",
+                description: "Short deportivo blanco con el estampado 'Los Angeles', cómodo y con estilo para el verano.",
+                sizes: ["S", "M", "L"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 4,
+                name: "Gorra 'LA' Estilo Urbano",
+                price: 25.00,
+                available: 20,
+                image: "WhatsApp Image 2025-05-28 at 7.04.04 PM.jpeg-4137d3a2-0c65-4054-affa-04ad3e8c40f2",
+                description: "Gorra ajustable con el icónico logo 'LA', disponible en varios colores para combinar con tu outfit.",
+                sizes: ["Talla Única"],
+                genders: ["UNISEX"],
+                colors: ["Beige", "Negro"],
+                colorImages: {
+                    "Beige": "WhatsApp Image 2025-05-28 at 7.04.04 PM.jpeg-4137d3a2-0c65-4054-affa-04ad3e8c40f2",
+                    "Negro": "WhatsApp Image 2025-05-28 at 7.04.06 PM.jpeg-af74c381-e4a5-4cf4-a9ed-4b0892e8715c"
+                }
+            },
+            {
+                id: 5,
+                name: "Jeans Rotos Celestes",
+                price: 65.00,
+                available: 8,
+                image: "WhatsApp Image 2025-05-28 at 7.04.05 PM (1).jpeg-25d4a82b-742f-4429-979f-db8a435a4e18",
+                description: "Jeans celestes con estilo desgastado y rotos, perfectos para un look urbano y moderno.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 6,
+                name: "Jeans Anchos Grises",
+                price: 60.00,
+                available: 7,
+                image: "WhatsApp Image 2025-05-28 at 7.04.05 PM (2).jpeg-12ee6e23-d516-44a7-923e-0e13462c7825",
+                description: "Jeans grises de corte ancho, ideales para un estilo relajado y cómodo.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 7,
+                name: "Chaqueta Técnica Bicolor",
+                price: 90.00,
+                available: 5,
+                image: "WhatsApp Image 2025-05-28 at 7.04.05 PM.jpeg-661232d5-6c4a-40e0-a46c-46ff112558e5",
+                description: "Chaqueta técnica bicolor con bloques de color, perfecta para un estilo deportivo y funcional.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 8,
+                name: "Blusa Blanca Casual",
+                price: 35.00,
+                available: 18,
+                image: "WhatsApp Image 2025-05-28 at 7.04.06 PM (1).jpeg-a5ef8249-ba94-4cb2-b60a-8dcc42b802c2",
+                description: "Blusa blanca casual de manga corta, un básico versátil para cualquier armario.",
+                sizes: ["S", "M", "L"],
+                genders: ["FEMENINO"]
+            },
+            {
+                id: 9,
+                name: "Camiseta Gráfica 'Cherries'",
+                price: 42.00,
+                available: 14,
+                image: "WhatsApp Image 2025-05-28 at 7.04.06 PM.jpeg-c96c3017-8923-45e0-9410-ddd624355562",
+                description: "Camiseta con un vibrante estampado de cerezas, de la colección 'Aelfric Eden'.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["FEMENINO"],
+                colors: ["Rosado", "Blanco"],
+                colorImages: {
+                    "Rosado": "WhatsApp Image 2025-05-28 at 7.04.06 PM.jpeg-c96c3017-8923-45e0-9410-ddd624355562",
+                    "Blanco": "WhatsApp Image 2025-05-28 at 7.04.09 PM (1).jpeg-0252ffda-4c13-40b6-8310-46efc17cf065" // Assuming this is the white version of the cherries shirt.
+                }
+            },
+            {
+                id: 10,
+                name: "Conjunto Burbuja Powerpuff Girls (Azul)",
+                price: 55.00,
+                available: 9,
+                image: "WhatsApp Image 2025-05-28 at 7.04.07 PM (1).jpeg-ef32908b-1928-4a4a-aba2-bfd43dba8e41",
+                description: "Conjunto de camiseta azul claro con estampado de Burbuja y shorts negros, incluye calcetines.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["FEMENINO"],
+                colors: ["Azul", "Lila"],
+                colorImages: {
+                    "Azul": "WhatsApp Image 2025-05-28 at 7.04.07 PM (1).jpeg-ef32908b-1928-4a4a-aba2-bfd43dba8e41",
+                    "Lila": "WhatsApp Image 2025-05-28 at 7.04.07 PM (2).jpeg-32d853d6-3fa7-4ada-a3bc-9aadcf91280a"
+                }
+            },
+            {
+                id: 11,
+                name: "Pantalón Cargo Beige",
+                price: 70.00,
+                available: 6,
+                image: "WhatsApp Image 2025-05-28 at 7.04.07 PM.jpeg-85345692-b299-47df-971e-7c1f88f593e7",
+                description: "Pantalón cargo beige con múltiples bolsillos, ideal para un estilo utilitario y moderno.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 12,
+                name: "Sudadera Gris con Capucha",
+                price: 50.00,
+                available: 11,
+                image: "WhatsApp Image 2025-05-28 at 7.04.08 PM.jpeg-f7d95e56-4bae-44e3-8cd3-1da6d93aeb64",
+                description: "Sudadera básica gris con capucha, suave y cómoda para el día a día.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 13,
+                name: "Pantalón Deportivo Negro",
+                price: 45.00,
+                available: 13,
+                image: "WhatsApp Image 2025-05-28 at 7.04.09 PM.jpeg-c2f6e354-37a8-44ed-a933-efa6e4b7282c",
+                description: "Pantalón deportivo negro con ajuste cómodo, ideal para entrenar o un look casual.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 14,
+                name: "Chaqueta Cortavientos Negra",
+                price: 85.00,
+                available: 7,
+                image: "WhatsApp Image 2025-05-28 at 7.04.11 PM.jpeg-293aa5c5-2fc5-4715-ac40-f6256cb69e6a",
+                description: "Chaqueta cortavientos negra, ligera y funcional, perfecta para actividades al aire libre.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 15,
+                name: "Camiseta Negra 'Los Angeles' Osito",
+                price: 45.00,
+                available: 16,
+                image: "WhatsApp Image 2025-05-28 at 7.04.14 PM (1).jpeg-9cc28abd-5fa7-4316-afbc-96d1747b6560",
+                description: "Camiseta negra con un diseño divertido de un osito con temática 'Los Angeles' y baloncesto.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 16,
+                name: "Camiseta Negra con Gráfico Trasero",
+                price: 40.00,
+                available: 10,
+                image: "WhatsApp Image 2025-05-28 at 7.04.14 PM (2).jpeg-e54f97e5-cbd7-48dc-88c1-51ef4f6f457a",
+                description: "Camiseta negra oversize con un llamativo gráfico en la espalda, estilo urbano.",
+                sizes: ["M", "L", "XL"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 17,
+                name: "Sudadera Negra con Capucha (Diseño)",
+                price: 55.00,
+                available: 8,
+                image: "WhatsApp Image 2025-05-28 at 7.04.18 PM (1).jpg-3a2cbc02-8935-4502-9e93-a7917d86ebc7",
+                description: "Sudadera negra con capucha y un diseño minimalista, ideal para el estilo streetwear.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 18,
+                name: "Camiseta Gráfica 'Street Thug'",
+                price: 38.00,
+                available: 15,
+                image: "WhatsApp Image 2025-05-28 at 7.04.18 PM.jpeg-e4aab5ca-9414-4dae-9a21-721f2ebe9294",
+                description: "Camiseta con el logo de 'STREET THUG', un básico esencial para tu colección.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 19,
+                name: "Pantalón Cargo Negro",
+                price: 72.00,
+                available: 7,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM (1).jpeg-34309854-7ce7-4921-9e6f-610af7361301",
+                description: "Pantalón cargo negro con bolsillos laterales, versátil y cómodo para un look urbano.",
+                sizes: ["28", "30", "32", "34", "36"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 20,
+                name: "Gorra Negra con Logo",
+                price: 22.00,
+                available: 18,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM (2).jpeg-3a560624-9440-4b07-b390-b52c58adff96",
+                description: "Gorra negra clásica con logo, un accesorio imprescindible para completar tu estilo.",
+                sizes: ["Talla Única"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 21,
+                name: "Chaqueta Bomber Negra",
+                price: 95.00,
+                available: 5,
+                image: "WhatsApp Image 2025-05-28 at 7.04.19 PM.jpeg-7985264c-5a70-47e4-99dd-95b4f205d921",
+                description: "Elegante chaqueta bomber negra, perfecta para añadir un toque de estilo a cualquier atuendo.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 22,
+                name: "Camiseta Blanca con Logo Pequeño",
+                price: 35.00,
+                available: 20,
+                image: "WhatsApp Image 2025-05-28 at 7.04.20 PM (1).jpeg-9133ee4d-9abf-4c26-8f80-cfc2d4f2d9e3",
+                description: "Camiseta blanca básica con un discreto logo, ideal para un look limpio y minimalista.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["UNISEX"]
+            },
+            {
+                id: 23,
+                name: "Short Deportivo Gris",
+                price: 32.00,
+                available: 14,
+                image: "WhatsApp Image 2025-05-28 at 7.04.20 PM.jpeg-ab377c75-cc6c-44be-a4a0-9f091867b055",
+                description: "Short deportivo gris, cómodo y versátil para el ejercicio o el uso diario.",
+                sizes: ["S", "M", "L"],
+                genders: ["MASCULINO"]
+            },
+            {
+                id: 24,
+                name: "Chaqueta Vaquera Oversize",
+                price: 80.00,
+                available: 9,
+                image: "WhatsApp Image 2025-05-28 at 7.04.21 PM.jpeg-8360dd10-9570-4241-bef3-caa1ab4b8e07",
+                description: "Chaqueta vaquera de corte oversize, un clásico atemporal con un toque moderno.",
+                sizes: ["S", "M", "L", "XL"],
+                genders: ["FEMENINO"]
+            }
+        ];
+
+        let cart = [];
+        let currentProduct = null; // To store the product currently viewed in detail
+
+        const splashPage = document.getElementById('splash-page');
+        const mainStorePage = document.getElementById('main-store-page');
+        const enterStoreBtn = document.getElementById('enter-store-btn');
+        const productListSection = document.getElementById('product-list-section');
+        const productDetailSection = document.getElementById('product-detail-section');
+        const closeDetailBtn = document.getElementById('close-detail-btn');
+        const cartBtn = document.getElementById('cart-btn');
+        const homeBtn = document.getElementById('home-btn');
+        const cartSection = document.getElementById('cart-section');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalSpan = document.getElementById('cart-total');
+        const cartCountSpan = document.getElementById('cart-count');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const messageModal = document.getElementById('message-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const aboutUsBtn = document.getElementById('about-us-btn');
+        const aboutUsSection = document.getElementById('about-us-section');
+        const contactBtn = document.getElementById('contact-btn');
+        const contactSection = document.getElementById('contact-section');
+        const contactForm = document.getElementById('contact-form');
+
+        // Event Listeners
+        enterStoreBtn.addEventListener('click', () => {
+            splashPage.classList.add('hidden');
+            mainStorePage.classList.remove('hidden');
+            renderProducts();
+        });
+
+        homeBtn.addEventListener('click', () => {
+            showSection('product-list-section');
+            renderProducts(); // Re-render products to ensure filters are reset
+        });
+
+        closeDetailBtn.addEventListener('click', () => {
+            productDetailSection.classList.add('hidden');
+            mainStorePage.classList.remove('hidden');
+        });
+
+        cartBtn.addEventListener('click', () => {
+            showSection('cart-section');
+            renderCart();
+        });
+
+        aboutUsBtn.addEventListener('click', () => {
+            showSection('about-us-section');
+        });
+
+        contactBtn.addEventListener('click', () => {
+            showSection('contact-section');
+        });
+
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length > 0) {
+                showMessage('¡Gracias por tu compra! Tu pedido ha sido procesado.');
+                cart = []; // Clear the cart
+                saveCart();
+                renderCart();
+                updateCartCount();
+            } else {
+                showMessage('Tu carrito está vacío. Agrega productos antes de pagar.');
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            messageModal.style.display = 'none';
+        });
+
+        contactForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+            showMessage('¡Gracias por tu mensaje! Nos pondremos en contacto contigo pronto.');
+            contactForm.reset(); // Clear the form
+        });
+
+        // Helper function to show a specific section and hide others
+        function showSection(sectionId) {
+            document.querySelectorAll('.page section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            productDetailSection.classList.add('hidden'); // Ensure detail section is hidden
+        }
+
+        // Render Product Cards
+        function renderProducts() {
+            productListSection.innerHTML = ''; // Clear existing products
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform hover:scale-105';
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover"/>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">${product.name}</h3>
+                        <p class="text-gray-700 text-xl font-semibold mb-2">$${product.price.toFixed(2)}</p>
+                        <p class="text-gray-500 text-sm">${product.available > 0 ? 'En Stock' : 'Agotado'}</p>
+                    </div>
+                `;
+                productCard.addEventListener('click', () => showProductDetail(product.id));
+                productListSection.appendChild(productCard);
+            });
+        }
+
+        // Show Product Detail
+        function showProductDetail(productId) {
+            currentProduct = products.find(p => p.id === productId);
+            if (!currentProduct) return;
+
+            document.getElementById('detail-product-image').src = currentProduct.image;
+            document.getElementById('detail-product-name').textContent = currentProduct.name;
+            document.getElementById('detail-product-description').textContent = currentProduct.description;
+            document.getElementById('detail-product-price').textContent = currentProduct.price.toFixed(2);
+            document.getElementById('detail-product-gender').textContent = `Género: ${currentProduct.genders.join(', ')}`;
+            document.getElementById('detail-product-availability').textContent = `Disponibles: ${currentProduct.available} unidades`;
+
+            // Render Sizes
+            const sizeOptionsContainer = document.getElementById('size-options');
+            sizeOptionsContainer.innerHTML = ''; // Clear previous sizes
+            currentProduct.sizes.forEach(size => {
+                const sizeBtn = document.createElement('button');
+                sizeBtn.className = 'btn-secondary px-3 py-1 text-sm';
+                sizeBtn.textContent = size;
+                sizeBtn.addEventListener('click', () => {
+                    // Highlight selected size (optional)
+                    Array.from(sizeOptionsContainer.children).forEach(btn => btn.classList.remove('bg-indigo-200'));
+                    sizeBtn.classList.add('bg-indigo-200');
+                    currentProduct.selectedSize = size;
+                });
+                sizeOptionsContainer.appendChild(sizeBtn);
+            });
+            if (currentProduct.sizes.length > 0) {
+                // Pre-select the first size
+                sizeOptionsContainer.children[0].click();
+            } else {
+                currentProduct.selectedSize = null;
+            }
+
+            // Render Colors
+            const colorOptionsContainer = document.getElementById('color-options');
+            colorOptionsContainer.innerHTML = ''; // Clear previous colors
+            if (currentProduct.colors && currentProduct.colors.length > 0) {
+                document.getElementById('detail-product-colors').classList.remove('hidden');
+                currentProduct.colors.forEach(color => {
+                    const colorCircle = document.createElement('div');
+                    colorCircle.className = `w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer flex items-center justify-center text-xs`;
+                    colorCircle.style.backgroundColor = getColorCode(color); // Set background color
+                    colorCircle.title = color; // Tooltip for color name
+                    colorCircle.dataset.colorName = color; // Store color name for selection
+                    colorCircle.addEventListener('click', () => {
+                        // Update product image based on selected color
+                        document.getElementById('detail-product-image').src = currentProduct.colorImages[color];
+                        // Highlight selected color
+                        Array.from(colorOptionsContainer.children).forEach(circle => circle.classList.remove('border-indigo-600', 'ring-2', 'ring-indigo-600'));
+                        colorCircle.classList.add('border-indigo-600', 'ring-2', 'ring-indigo-600');
+                        currentProduct.selectedColor = color;
+                    });
+                    colorOptionsContainer.appendChild(colorCircle);
+                });
+                // Pre-select the first color and set image
+                colorOptionsContainer.children[0].click();
+            } else {
+                document.getElementById('detail-product-colors').classList.add('hidden');
+                currentProduct.selectedColor = null;
+            }
+
+            // Disable add to cart if out of stock
+            const addToCartBtn = document.getElementById('add-to-cart-detail-btn');
+            if (currentProduct.available <= 0) {
+                addToCartBtn.disabled = true;
+                addToCartBtn.textContent = 'Agotado';
+            } else {
+                addToCartBtn.disabled = false;
+                addToCartBtn.textContent = 'Agregar al Carrito';
+            }
+
+            addToCartBtn.onclick = () => addProductToCart(currentProduct);
+
+            mainStorePage.classList.add('hidden');
+            productDetailSection.classList.remove('hidden');
+        }
+
+        // Function to get color code for display (you can expand this for more colors)
+        function getColorCode(colorName) {
+            switch(colorName) {
+                case "Negro/Azul": return "#000000"; // Primary for this combo, visual cue
+                case "Blanco/Verde": return "#e5e7eb"; // Light grey for white
+                case "Rosa": return "#fda4af"; // A light pink
+                case "Blanco": return "#e5e7eb"; // Light grey for white
+                case "Beige": return "#f5f5dc";
+                case "Negro": return "#000000";
+                case "Azul": return "#60a5fa"; // Light blue
+                case "Lila": return "#c4b5fd"; // Light purple
+                case "Rosado": return "#f472b6"; // A deeper pink
+                default: return "#cccccc"; // Default grey
+            }
+        }
+
+
+        // Add Product to Cart
+        function addProductToCart(product) {
+            if (product.available <= 0) {
+                showMessage('Producto agotado.');
+                return;
+            }
+            if (!product.selectedSize && product.sizes.length > 0) {
+                showMessage('Por favor, selecciona una talla.');
+                return;
+            }
+
+            const itemInCart = cart.find(item =>
+                item.id === product.id &&
+                item.selectedSize === product.selectedSize &&
+                item.selectedColor === product.selectedColor
+            );
+
+            if (itemInCart) {
+                if (itemInCart.quantity < product.available) {
+                    itemInCart.quantity++;
+                    showMessage(`${product.name} (Talla: ${product.selectedSize || 'N/A'}, Color: ${product.selectedColor || 'N/A'}) se añadió de nuevo al carrito.`);
+                } else {
+                    showMessage(`No hay más unidades de ${product.name} (Talla: ${product.selectedSize || 'N/A'}, Color: ${product.selectedColor || 'N/A'}) disponibles.`);
+                }
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image, // Use the initially displayed image or selected color image
+                    selectedSize: product.selectedSize,
+                    selectedColor: product.selectedColor,
+                    quantity: 1
+                });
+                showMessage(`${product.name} (Talla: ${product.selectedSize || 'N/A'}, Color: ${product.selectedColor || 'N/A'}) se añadió al carrito.`);
+            }
+            saveCart();
+            updateCartCount();
+            renderCart();
+        }
+
+        // Render Shopping Cart
+        function renderCart() {
+            cartItemsContainer.innerHTML = ''; // Clear existing cart items
+            let total = 0;
+
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                checkoutBtn.disabled = true;
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                checkoutBtn.disabled = false;
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+
+                    const cartItemDiv = document.createElement('div');
+                    cartItemDiv.className = 'flex items-center justify-between border-b border-gray-100 py-4';
+                    cartItemDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4"/>
+                            <div>
+                                <p class="font-semibold text-gray-800">${item.name}</p>
+                                <p class="text-sm text-gray-500">Talla: ${item.selectedSize || 'N/A'}</p>
+                                <p class="text-sm text-gray-500">Color: ${item.selectedColor || 'N/A'}</p>
+                                <p class="text-sm text-gray-600">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <p class="font-bold text-gray-700 mr-4">$${itemTotal.toFixed(2)}</p>
+                            <button data-id="${item.id}" data-size="${item.selectedSize}" data-color="${item.selectedColor}" class="remove-from-cart-btn bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm">Eliminar</button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(cartItemDiv);
+                });
+            }
+
+            cartTotalSpan.textContent = total.toFixed(2);
+
+            document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const id = parseInt(event.target.dataset.id);
+                    const size = event.target.dataset.size === 'N/A' ? null : event.target.dataset.size;
+                    const color = event.target.dataset.color === 'N/A' ? null : event.target.dataset.color;
+                    removeProductFromCart(id, size, color);
+                });
+            });
+        }
+
+        // Remove Product from Cart
+        function removeProductFromCart(id, size, color) {
+            cart = cart.filter(item => !(item.id === id && item.selectedSize === size && item.selectedColor === color));
+            saveCart();
+            updateCartCount();
+            renderCart();
+            showMessage('Producto eliminado del carrito.');
+        }
+
+        // Update Cart Count in Navbar
+        function updateCartCount() {
+            cartCountSpan.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        // Save Cart to Local Storage
+        function saveCart() {
+            localStorage.setItem('streetThugCart', JSON.stringify(cart));
+        }
+
+        // Load Cart from Local Storage
+        function loadCart() {
+            const savedCart = localStorage.getItem('streetThugCart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+        }
+
+        // Show Message Modal
+        function showMessage(message) {
+            modalMessage.textContent = message;
+            messageModal.style.display = 'flex';
+        }
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCart();
+            updateCartCount();
+            // Initially, only the splash page is visible due to CSS
+        });
+    </script>
+</body>
+</html>
